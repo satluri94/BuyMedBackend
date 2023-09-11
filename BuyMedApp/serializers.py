@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
-from .models import CartItem
+from .models import CartItem, Stock, Order
 
 class RegisterSerializer(serializers.ModelSerializer):
 
@@ -73,3 +73,13 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = [ 'title', 'price']
+
+class StockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = ['title', 'price', 'category', 'description']
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [ 'title', 'price', 'quantity']

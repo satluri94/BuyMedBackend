@@ -1,3 +1,5 @@
+import random
+import string
 from django.shortcuts import render
 
 from .models import User
@@ -16,10 +18,12 @@ from rest_framework import status
 from rest_framework import viewsets
 from .serializers import CartItemSerializer, StockSerializer, OrderSerializer
 from .models import CartItem
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from .models import Stock, Order
 from rest_framework.authtoken.models import Token
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
+
 
 # Create your views here.
 
@@ -38,9 +42,10 @@ class LoginView(views.APIView):
         user = serializer.validated_data['user']
         login(request, user)
         #Check login is successful or not
-        # token = Token.objects.create(user=...)
-        return Response(None, status=status.HTTP_200_OK) 
-        # return JsonResponse({'Auth_Token': token.key}, status=status.HTTP_200_OK)
+        token, _ = Token.objects.get_or_create(user=user)
+        # print(token)
+        # return Response(None, status=status.HTTP_200_OK) 
+        return JsonResponse({'Auth_Token': token.key}, status=status.HTTP_200_OK)
 
 
 class ListCartItems(generics.ListCreateAPIView):
@@ -100,11 +105,16 @@ class CategoryItems(generics.ListAPIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def placeOrder(request):
     if request.method == 'POST':
         new_order = JSONParser().parse(request)
         if new_order is not None:
             serializer = None
+            id = ''.join(random.choice(string.digits) for _ in range(6))
+            print (new_order)
+            print (id)
+            # new_order(orderid)=id
             serializer = OrderSerializer(data=new_order, many=True)
             if serializer.is_valid():
                 serializer.save()
@@ -112,7 +122,8 @@ def placeOrder(request):
             return JsonResponse(serializer.errors, safe=False,  status=status.HTTP_400_BAD_REQUEST)
         else:
             return JsonResponse({'message': 'No orders found!'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@permission_classes([IsAuthenticated])
 class ViewOrders(generics.ListAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

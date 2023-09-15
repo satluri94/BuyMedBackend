@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
-    # 'rest_framework.authtoken',
+    # 'rest_framework_swagger',
+    'rest_framework.authtoken',
     'BuyMedApp'
 ]
 
@@ -133,4 +134,7 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated',
     # ]
+    # 'DEFAULT_SCHEMA_CLASS':(
+    #     'rest_framework.schemas.coreapi.AutoSchema' 
+    # ),
 }
